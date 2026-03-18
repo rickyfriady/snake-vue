@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useSnakeStore } from './stores/snake'
+
 import type { SnakeState } from './game/snake-engine'
+import { useSnakeStore } from './stores/snake'
 
 const store = useSnakeStore()
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -50,7 +51,7 @@ const drawGrid = (context: CanvasRenderingContext2D) => {
 }
 
 const drawSnake = (context: CanvasRenderingContext2D, state: SnakeState) => {
-  state.snake.forEach((segment, index) => {
+  for (const [index, segment] of state.snake.entries()) {
     context.fillStyle = index === 0 ? '#22c55e' : '#16a34a'
     context.fillRect(
       segment.x * store.cellSize + 1,
@@ -58,7 +59,7 @@ const drawSnake = (context: CanvasRenderingContext2D, state: SnakeState) => {
       store.cellSize - 2,
       store.cellSize - 2,
     )
-  })
+  }
 }
 
 const drawFood = (context: CanvasRenderingContext2D, state: SnakeState) => {
@@ -84,7 +85,7 @@ const drawBoard = (state: SnakeState) => {
     return
   }
 
-  const pixelRatio = window.devicePixelRatio || 1
+  const pixelRatio = globalThis.devicePixelRatio || 1
   const targetWidth = Math.floor(store.boardWidth * pixelRatio)
   const targetHeight = Math.floor(store.boardHeight * pixelRatio)
 
@@ -126,12 +127,12 @@ const onKeydown = (event: KeyboardEvent) => {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', onKeydown, { passive: false })
+  globalThis.addEventListener('keydown', onKeydown, { passive: false })
   drawBoard(store.state)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onKeydown)
+  globalThis.removeEventListener('keydown', onKeydown)
 })
 </script>
 

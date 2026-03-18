@@ -1,6 +1,7 @@
 import { useIntervalFn } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+
 import {
   createInitialState,
   defaultSnakeConfig,

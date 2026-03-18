@@ -39,7 +39,17 @@
     - accidental `console.*` and `debugger` in production source.
 - Added SonarQube-style lint rules via `eslint-plugin-sonarjs`.
 - Enforced stricter ESLint safety rules to avoid:
-    - `console` usage in app code (except `warn` and `error`),
-    - explicit `any`,
-    - explicit `unknown`.
+  - `console` usage in app code (except `warn` and `error`),
+  - explicit `any`,
+  - explicit `unknown`.
+- Aligned `eslint.config.mjs` with added ESLint plugins in `package.json`:
+  - `@vitest/eslint-plugin` for test files,
+  - `eslint-plugin-import-x` import ordering/duplicate protection,
+  - `eslint-plugin-security-node` recommended security rules.
+- Added and wired additional ESLint plugins:
+  - `eslint-plugin-unicorn`,
+  - `eslint-plugin-promise`,
+  - `eslint-plugin-regexp`,
+  - `eslint-plugin-vuejs-accessibility`.
+- Tuned code/config to satisfy new lint rules (regex non-capturing groups, import order, global object access style, and loop style).
 - Resolved strict TypeScript lib-check issue by adding `@types/web-bluetooth` and registering `web-bluetooth` in app compiler `types`.

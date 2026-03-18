@@ -1,10 +1,11 @@
 import { existsSync, readFileSync } from 'node:fs'
+
 import { danger, fail, message, warn } from 'danger'
 
 const changedFiles = [...danger.git.created_files, ...danger.git.modified_files]
 const sourceFiles = changedFiles.filter((file) => file.startsWith('src/'))
-const sourceCodeFiles = sourceFiles.filter((file) => /\.(ts|tsx|js|jsx|vue)$/.test(file))
-const testFiles = changedFiles.filter((file) => /\.test\.(ts|tsx|js|jsx)$/.test(file))
+const sourceCodeFiles = sourceFiles.filter((file) => /\.(?:ts|tsx|js|jsx|vue)$/.test(file))
+const testFiles = changedFiles.filter((file) => /\.test\.(?:ts|tsx|js|jsx)$/.test(file))
 const docsTouched = changedFiles.some((file) => file === 'README.md' || file === 'CHANGE_LOG.md')
 const configFilesTouched = changedFiles.some((file) =>
   [
@@ -19,7 +20,7 @@ const configFilesTouched = changedFiles.some((file) =>
   ].includes(file),
 )
 
-if (!sourceFiles.length) {
+if (sourceFiles.length === 0) {
   warn('No `src/` files were modified.')
 }
 
@@ -54,7 +55,7 @@ for (const file of sourceCodeFiles) {
 
   const content = readFileSync(file, 'utf8')
 
-  if (/\bconsole\.(log|debug|info)\(/.test(content)) {
+  if (/\bconsole\.(?:log|debug|info)\(/.test(content)) {
     fail(`Production source must not include console logging: ${file}`)
   }
 
