@@ -1,5 +1,10 @@
 # Change Log
 
+## v0.1.0 (2026-03-19)
+
+- First tagged release candidate for Snake Vue.
+- Includes classic Snake gameplay, strict lint/type/test/build gates, CI workflow, route-based pages, and release automation.
+
 ## 2026-03-18
 
 ### Added
