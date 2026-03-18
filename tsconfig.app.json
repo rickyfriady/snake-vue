@@ -16,7 +16,7 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
 
     "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,

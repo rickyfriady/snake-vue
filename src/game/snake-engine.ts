@@ -29,6 +29,18 @@ export const defaultSnakeConfig: SnakeConfig = {
   initialLength: 3,
 }
 
+const defaultRandomizer: Randomizer = () => {
+  if (globalThis.crypto !== undefined && typeof globalThis.crypto.getRandomValues === 'function') {
+    const buffer = new Uint32Array(1)
+    globalThis.crypto.getRandomValues(buffer)
+    return (buffer[0] ?? 0) / 4_294_967_296
+  }
+
+  const seed = Date.now()
+  const mixedSeed = (seed ^ (seed >>> 11) ^ (seed << 7)) >>> 0
+  return mixedSeed / 4_294_967_296
+}
+
 const directionDelta: Record<Direction, Position> = {
   up: { x: 0, y: -1 },
   down: { x: 0, y: 1 },
@@ -80,7 +92,7 @@ const listEmptyCells = (config: SnakeConfig, snake: Position[]): Position[] => {
 export const spawnFood = (
   config: SnakeConfig,
   snake: Position[],
-  randomizer: Randomizer = Math.random,
+  randomizer: Randomizer = defaultRandomizer,
 ): Position | null => {
   const emptyCells = listEmptyCells(config, snake)
 
@@ -94,7 +106,7 @@ export const spawnFood = (
 
 export const createInitialState = (
   config: SnakeConfig = defaultSnakeConfig,
-  randomizer: Randomizer = Math.random,
+  randomizer: Randomizer = defaultRandomizer,
 ): SnakeState => {
   if (config.cols <= 0 || config.rows <= 0) {
     throw new Error('Grid dimensions must be greater than zero.')
@@ -151,7 +163,7 @@ export const stepSnake = (
   state: SnakeState,
   config: SnakeConfig = defaultSnakeConfig,
   requestedDirection: Direction | null = null,
-  randomizer: Randomizer = Math.random,
+  randomizer: Randomizer = defaultRandomizer,
 ): SnakeState => {
   const direction = resolveDirection(state.direction, requestedDirection)
   const head = state.snake[0]

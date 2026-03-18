@@ -12,7 +12,11 @@
 
 ### Updated
 
-- Replaced starter page with Snake game UI in `src/App.vue`.
+- Moved app to route-based navigation:
+  - `/` home page (`src/pages/HomePage.vue`),
+  - `/snake` game page (`src/pages/SnakePage.vue`),
+  - router setup in `src/router/index.ts`.
+- Converted `src/App.vue` to router shell with `<RouterView />`.
 - Improved production canvas rendering:
     - HiDPI scaling for sharper board rendering.
     - Responsive canvas sizing for mobile layouts.
@@ -26,9 +30,14 @@
 ### Tooling
 
 - Added dependencies: `pinia`, `@vueuse/core`, `tailwindcss`, `@tailwindcss/vite`.
+- Added dependency: `vue-router` for route-based navigation.
 - Added dev tooling: Biome, ESLint, Husky, Danger.
 - Added config files: `biome.json`, `eslint.config.mjs`, `dangerfile.ts`.
 - Added scripts for lint, test, typecheck, danger, and prepare in `package.json`.
+- Added release scripts:
+  - `release:check` (full quality gate),
+  - `release:tag` (annotated git tag helper).
+- Added `scripts/release-tag.sh` for guarded release tagging.
 - Added Husky pre-commit hook to run lint and tests.
 - Tightened Biome policy with stricter rule groups (`complexity`, `performance`, `security`, `suspicious`, `style`) and explicit formatting line width.
 - Tightened TypeScript policy in app/node configs with `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noPropertyAccessFromIndexSignature`, `noImplicitReturns`, and related strict checks.
@@ -53,3 +62,5 @@
   - `eslint-plugin-vuejs-accessibility`.
 - Tuned code/config to satisfy new lint rules (regex non-capturing groups, import order, global object access style, and loop style).
 - Resolved strict TypeScript lib-check issue by adding `@types/web-bluetooth` and registering `web-bluetooth` in app compiler `types`.
+- Adjusted `tsconfig.app.json` `skipLibCheck` to `true` to handle upstream `vue-router` type incompatibility while preserving strict checks for application code.
+- Added CI workflow in `.github/workflows/ci.yml` to run lint, typecheck, test, and build on push/PR.
