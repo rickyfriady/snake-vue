@@ -92,9 +92,7 @@ describe('snake-engine', () => {
     const food = spawnFood(config, snake, () => 0)
 
     expect(food).not.toBeNull()
-    expect(
-      snake.some((segment) => segment.x === food?.x && segment.y === food?.y),
-    ).toBeFalse()
+    expect(snake.some((segment) => segment.x === food?.x && segment.y === food?.y)).toBeFalse()
   })
 
   it('returns null food when board is full', () => {
@@ -104,10 +102,7 @@ describe('snake-engine', () => {
       { x: 0, y: 1 },
       { x: 1, y: 1 },
     ]
-    const food = spawnFood(
-      { cols: 2, rows: 2, initialLength: 2 },
-      fullBoardSnake,
-    )
+    const food = spawnFood({ cols: 2, rows: 2, initialLength: 2 }, fullBoardSnake)
     expect(food).toBeNull()
   })
 
