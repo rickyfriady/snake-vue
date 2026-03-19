@@ -1,5 +1,49 @@
 # Change Log
 
+## 2026-03-19
+
+### Added
+
+- Daily challenge mode with deterministic date-based seed.
+- Player profile persistence (name, best score, recent run history).
+- Leaderboard API client in frontend (`src/services/snake-api.ts`).
+- Bun backend server (`server/index.ts`) with:
+  - `GET /api/health`
+  - `GET /api/leaderboard`
+  - `POST /api/leaderboard/submit`
+  - `WS /ws` room-based multiplayer protocol
+- Multiplayer Pinia store (`src/stores/snake-multiplayer.ts`) and in-page lobby UI.
+- Backend protocol tests in `server/index.test.ts`.
+- Bun runtime types via `@types/bun`.
+- New npm script: `server:dev`.
+
+### Updated
+
+- `src/stores/snake.ts`:
+  - Added mode switching (`solo`, `daily`, `multiplayer`).
+  - Added secure seeded randomizer setup per mode.
+  - Added run finalization and persistence updates.
+  - Added multiplayer-safe behavior to pause/start/restart/direction handlers.
+- `src/pages/SnakePage.vue`:
+  - Added mode selector, player profile input, and stats panels.
+  - Added leaderboard panel and submission refresh behavior.
+  - Added multiplayer room controls (create/join/ready/restart/leave).
+  - Updated keyboard behavior to handle multiplayer actions.
+- `src/game/snake-engine.ts`:
+  - Added `createSeededRandomizer`.
+- `src/game/snake-engine.test.ts`:
+  - Added deterministic randomizer and daily seed tests.
+- `vite.config.ts`:
+  - Added dev proxy routes for `/api` and `/ws` to backend.
+- `tsconfig.node.json`:
+  - Added Bun types and server include coverage.
+
+## v0.1.0 (2026-03-19)
+
+- First tagged release candidate for Snake Vue.
+- Includes classic Snake gameplay, strict lint/type/test/build gates, CI workflow, route-based pages, and release automation.
+- Added `.github/workflows/release.yml` for tag-driven GitHub Releases with build artifact upload and generated release notes.
+
 ## 2026-03-18
 
 ### Added
