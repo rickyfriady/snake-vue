@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'bun:test'
 
+import { createDailySeed } from './daily-seed'
 import {
   createInitialState,
+  createSeededRandomizer,
   isOppositeDirection,
   spawnFood,
   stepSnake,
@@ -116,5 +118,30 @@ describe('snake-engine', () => {
   it('validates opposite direction helper', () => {
     expect(isOppositeDirection('up', 'down')).toBeTrue()
     expect(isOppositeDirection('left', 'up')).toBeFalse()
+  })
+
+  it('produces deterministic random sequence for a fixed seed', () => {
+    const randomA = createSeededRandomizer(123_456)
+    const randomB = createSeededRandomizer(123_456)
+
+    const sequenceA = [randomA(), randomA(), randomA(), randomA()]
+    const sequenceB = [randomB(), randomB(), randomB(), randomB()]
+
+    expect(sequenceA).toEqual(sequenceB)
+  })
+
+  it('generates stable daily seed for same date and timezone', () => {
+    const date = new Date('2026-03-19T08:00:00.000Z')
+    const seedA = createDailySeed(date, 'UTC')
+    const seedB = createDailySeed(date, 'UTC')
+
+    expect(seedA).toBe(seedB)
+  })
+
+  it('generates different daily seeds across days', () => {
+    const first = createDailySeed(new Date('2026-03-19T08:00:00.000Z'), 'UTC')
+    const second = createDailySeed(new Date('2026-03-20T08:00:00.000Z'), 'UTC')
+
+    expect(first).not.toBe(second)
   })
 })

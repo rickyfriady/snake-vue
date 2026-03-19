@@ -41,6 +41,15 @@ const defaultRandomizer: Randomizer = () => {
   return mixedSeed / 4_294_967_296
 }
 
+export const createSeededRandomizer = (seed: number): Randomizer => {
+  let state = seed >>> 0
+
+  return () => {
+    state = (Math.imul(state, 1_664_525) + 1_013_904_223) >>> 0
+    return state / 4_294_967_296
+  }
+}
+
 const directionDelta: Record<Direction, Position> = {
   up: { x: 0, y: -1 },
   down: { x: 0, y: 1 },

@@ -9,8 +9,8 @@ import { RouterLink } from 'vue-router'
     >
       <h1 class="text-2xl font-semibold text-slate-900">Snake Vue</h1>
       <p class="mt-3 text-sm text-slate-600">
-        Classic Snake game with deterministic engine, Pinia state, and canvas
-        renderer.
+        Classic Snake with solo, daily challenge, and realtime multiplayer
+        rooms powered by Bun WebSocket + leaderboard API.
       </p>
       <RouterLink
         class="mt-5 inline-flex rounded border border-slate-300 bg-slate-900 px-4 py-2 text-sm font-medium text-white no-underline"
