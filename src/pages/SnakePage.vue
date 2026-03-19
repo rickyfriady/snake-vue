@@ -391,15 +391,17 @@ const submitRunToLeaderboard = async (run: RunResult) => {
   }
 
   try {
-    await submitLeaderboardEntry({
+    const submitPayload = {
       playerName: store.playerName,
       mode: run.mode,
       score: run.score,
       durationMs: run.durationMs,
       maxLength: run.maxLength,
       endedAt: run.endedAt,
-      dailySeed: run.mode === 'daily' ? store.dailySeed : undefined,
-    })
+      ...(run.mode === 'daily' ? { dailySeed: store.dailySeed } : {}),
+    }
+
+    await submitLeaderboardEntry(submitPayload)
 
     leaderboardSubmitError.value = ''
     await refreshLeaderboard()
@@ -535,10 +537,8 @@ watch(
       return
     }
 
-    if (nextMode !== 'multiplayer') {
-      multiplayerBackendStatus.value = 'checking'
-      multiplayerBackendMessage.value = 'Checking multiplayer backend...'
-    }
+    multiplayerBackendStatus.value = 'checking'
+    multiplayerBackendMessage.value = 'Checking multiplayer backend...'
 
     if (previousMode === 'multiplayer') {
       multiplayerStore.leaveRoom().catch(() => {
