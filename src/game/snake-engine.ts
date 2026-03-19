@@ -29,6 +29,18 @@ export const defaultSnakeConfig: SnakeConfig = {
   initialLength: 3,
 }
 
+const defaultRandomizer: Randomizer = () => {
+  if (globalThis.crypto !== undefined && typeof globalThis.crypto.getRandomValues === 'function') {
+    const buffer = new Uint32Array(1)
+    globalThis.crypto.getRandomValues(buffer)
+    return (buffer[0] ?? 0) / 4_294_967_296
+  }
+
+  const seed = Date.now()
+  const mixedSeed = (seed ^ (seed >>> 11) ^ (seed << 7)) >>> 0
+  return mixedSeed / 4_294_967_296
+}
+
 const directionDelta: Record<Direction, Position> = {
   up: { x: 0, y: -1 },
   down: { x: 0, y: 1 },
@@ -36,10 +48,7 @@ const directionDelta: Record<Direction, Position> = {
   right: { x: 1, y: 0 },
 }
 
-export const isOppositeDirection = (
-  current: Direction,
-  next: Direction,
-): boolean => {
+export const isOppositeDirection = (current: Direction, next: Direction): boolean => {
   return (
     (current === 'up' && next === 'down') ||
     (current === 'down' && next === 'up') ||
@@ -48,14 +57,10 @@ export const isOppositeDirection = (
   )
 }
 
-const isSameCell = (a: Position, b: Position): boolean =>
-  a.x === b.x && a.y === b.y
+const isSameCell = (a: Position, b: Position): boolean => a.x === b.x && a.y === b.y
 
 const isOutOfBounds = (position: Position, config: SnakeConfig): boolean =>
-  position.x < 0 ||
-  position.y < 0 ||
-  position.x >= config.cols ||
-  position.y >= config.rows
+  position.x < 0 || position.y < 0 || position.x >= config.cols || position.y >= config.rows
 
 const createInitialSnake = (config: SnakeConfig): Position[] => {
   const centerX = Math.floor(config.cols / 2)
@@ -68,9 +73,7 @@ const createInitialSnake = (config: SnakeConfig): Position[] => {
 }
 
 const listEmptyCells = (config: SnakeConfig, snake: Position[]): Position[] => {
-  const snakeCells = new Set(
-    snake.map((segment) => `${segment.x}:${segment.y}`),
-  )
+  const snakeCells = new Set(snake.map((segment) => `${segment.x}:${segment.y}`))
   const emptyCells: Position[] = []
 
   for (let y = 0; y < config.rows; y += 1) {
@@ -89,7 +92,7 @@ const listEmptyCells = (config: SnakeConfig, snake: Position[]): Position[] => {
 export const spawnFood = (
   config: SnakeConfig,
   snake: Position[],
-  randomizer: Randomizer = Math.random,
+  randomizer: Randomizer = defaultRandomizer,
 ): Position | null => {
   const emptyCells = listEmptyCells(config, snake)
 
@@ -98,13 +101,25 @@ export const spawnFood = (
   }
 
   const selectedIndex = Math.floor(randomizer() * emptyCells.length)
-  return emptyCells[selectedIndex] ?? emptyCells[0]
+  return emptyCells[selectedIndex] ?? emptyCells[0] ?? null
 }
 
 export const createInitialState = (
   config: SnakeConfig = defaultSnakeConfig,
-  randomizer: Randomizer = Math.random,
+  randomizer: Randomizer = defaultRandomizer,
 ): SnakeState => {
+  if (config.cols <= 0 || config.rows <= 0) {
+    throw new Error('Grid dimensions must be greater than zero.')
+  }
+
+  if (config.initialLength <= 0) {
+    throw new Error('Initial snake length must be greater than zero.')
+  }
+
+  if (config.initialLength > config.cols * config.rows) {
+    throw new Error('Initial snake length cannot exceed board cell count.')
+  }
+
   const snake = createInitialSnake(config)
   const food = spawnFood(config, snake, randomizer)
 
@@ -148,10 +163,19 @@ export const stepSnake = (
   state: SnakeState,
   config: SnakeConfig = defaultSnakeConfig,
   requestedDirection: Direction | null = null,
-  randomizer: Randomizer = Math.random,
+  randomizer: Randomizer = defaultRandomizer,
 ): SnakeState => {
   const direction = resolveDirection(state.direction, requestedDirection)
   const head = state.snake[0]
+
+  if (!head) {
+    return {
+      ...state,
+      direction,
+      status: 'game_over',
+    }
+  }
+
   const newHead = nextHeadPosition(head, direction)
 
   if (isOutOfBounds(newHead, config)) {
@@ -164,9 +188,7 @@ export const stepSnake = (
 
   const isEating = isSameCell(newHead, state.food)
   const collisionTargets = isEating ? state.snake : state.snake.slice(0, -1)
-  const hasSelfCollision = collisionTargets.some((segment) =>
-    isSameCell(segment, newHead),
-  )
+  const hasSelfCollision = collisionTargets.some((segment) => isSameCell(segment, newHead))
 
   if (hasSelfCollision) {
     return {
